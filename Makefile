@@ -9,7 +9,7 @@ clean:
 	make -C cbe -f Makefile.6809 clean
 	make -C decb -f Makefile.6809 clean
 	make -C bfc -f Makefile.6809 clean
-	rm *~
+	rm -f *~
 
 
 
