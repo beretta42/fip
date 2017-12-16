@@ -1,4 +1,4 @@
-#Fuzix Instalation Project
+# Fuzix Instalation Project
 
 This project is designed to make the installation and setup of FUZIX
 on a Tandy Color Computer 3 easier and more tuned to the CoCo
