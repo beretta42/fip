@@ -1,0 +1,7 @@
+if [ $1 = "0" ]; then
+   echo b4OK
+else
+   echo b2FAILED
+fi
+echo -n b1
+

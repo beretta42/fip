@@ -1,0 +1,17 @@
+cd /etc
+bget group
+bget hostname
+bget inittab
+bget passwd
+bget rc
+chmod 0755 rc
+chmod 0755 rc.chk
+bget rc.chk
+mkdir skel
+cd skel
+bget skel/.profile
+chmod 0755 .profile
+cd /bin
+bget shutdown
+chmod 0755 shutdown
+

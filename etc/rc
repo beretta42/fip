@@ -1,0 +1,8 @@
+echo -n b1
+echo /etc/rc:
+
+echo -n Setting /etc/mtab...
+prtroot > /etc/mtab
+/etc/rc.chk $?
+
+echo b4
