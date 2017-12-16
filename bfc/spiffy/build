@@ -1,0 +1,8 @@
+bfc spiffy.fs
+as09 -b spiffy.tmp f.out
+rm -f f.out 
+dd bs=256 if=spiffy.tmp of=spiffy skip=1
+rm -f spiffy.tmp
+chmod u+x spiffy
+./spiffy < level2.fs
+

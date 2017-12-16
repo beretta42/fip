@@ -1,0 +1,7 @@
+cd /usr/bin
+bget decb
+chmod 0755 decb
+cd /usr/man/man1
+bget decb.1
+chmod 0644 decb.1
+quit

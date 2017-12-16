@@ -1,0 +1,14 @@
+cd /usr/bin
+bget cbe
+chmod 0755 cbe
+cd /usr/share
+mkdir roms
+cd roms
+bget roms/basic.rom basic.rom
+bget roms/ecb.rom ecb.rom
+bget roms/disk.rom disk.rom
+chmod 0644 basic.rom
+chmod 0644 ecb.rom
+chmod 0644 disk.rom
+quit
+

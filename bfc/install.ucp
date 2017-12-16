@@ -1,0 +1,13 @@
+cd /usr/bin
+bget bfc
+chmod 0755 bfc
+cd /usr/src
+mkdir spiffy
+cd spiffy
+bget spiffy/build
+chmod 0755 build
+bget spiffy/colors.fs
+bget spiffy/hello.fs
+bget spiffy/level2.fs
+bget spiffy/spiffy.fs
+quit

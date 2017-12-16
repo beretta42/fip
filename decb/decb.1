@@ -1,0 +1,81 @@
+.TH man 1 "Tandy Color Computer Utilities" "FUZIX" \" -*- nroff -*-
+.SH NAME
+decb \- manipulate a Tandy Color Computer filesystem
+.SH SYNOPSIS
+.B decb
+[\-a] [\-b] [\-0] [\-1] [\-2] [\-3] [\-l] [\-m] [\-p] [\-o offset] command image [src] [dest]
+.SH DESCRIPTION
+.B decb 
+allows you to manipulate a Tandy Color Computer disk filesystem image: formatting, copying native files to and from the image, removing files, and the such.
+.SH COMMANDS
+.TP
+.I "mkfs image"
+format a disk
+.TP
+.I "ls image"
+list contents of a disk
+.TP
+.I "rm image file"
+remove a file from disk
+.TP
+.I "get image source dest"
+get a file from disk
+.TP
+.I "put image source dest"
+put a file to disk
+.TP
+.I "putboot image source"
+write file to boot track of disk
+.TP
+.I "getboot image dest"
+write boot track to host
+.TP
+.I "map image"
+print a map of the granule allocation table (GAT)
+.TP
+.I "label image string"
+set volume label
+.SH OPTIONS
+.TP
+.I "-a"
+Set file flag to ascii
+.TP
+.I "-b"
+set file flag to binary (default)
+.TP
+.I "-0,1,2,3"
+set file type to 0 - BASIC, 1 - BASIC data, 2 - ML, 3 - Text
+.TP
+.I "-l"
+translate line ending
+.TP
+.I "-m"
+protect first granule for MBR partitioning
+.TP
+.I "-p"
+protect boot track granule
+.TP
+.I "-o diskno"
+set image offset in disk images
+.TP 
+.I "-v offset"
+set image offset in bytes
+.SH EXAMPLES
+.IP
+decb ls /dev/dw0
+.IP
+decb -mp mkfs fresh.dsk
+.IP
+decb -b2 put fresh.dsk fuzix.bin FUZIX.BIN
+.SH EXIT STATUS
+.TP
+.B 0
+Completed successfully.
+.TP
+.B 1
+An error occured.
+.SH BUGS
+Tons!
+.SH AUTHORS
+Brett M. Gordon
+
