@@ -1,0 +1,4 @@
+cd /usr/bin
+bget picol picol-fip
+chmod 0755 picol-fip
+quit

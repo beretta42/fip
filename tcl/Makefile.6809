@@ -1,0 +1,35 @@
+include ../config.mk
+PLATFORM = 6809
+CC = m6809-unknown-gcc
+# These are wrappers for lwasm and lwar
+ASM = m6809-unknown-as
+AR = m6809-unknown-ar
+LINKER = lwlink
+CFLAGS = -I$(FUZIX_DIR)/Library/include -I$(FUZIX_DIR)/Library/include/6809
+COPT = -Os
+LINKER_OPT = --format=raw -L$(FUZIX_DIR)/Library/libs -lc6809
+LIBGCCDIR = $(dir $(shell $(CC) -print-libgcc-file-name))
+LINKER_OPT += -L$(LIBGCCDIR) -lgcc
+LINKER_OPT += --script=$(FUZIX_DIR)/Applications/util/$(TARGET).link
+ASM_OPT = -o
+CRT0 = $(FUZIX_DIR)/Library/libs/crt0_6809.o
+
+SRCS = picol.c picol-brett.c
+
+OBJS = picol.o picol-brett.o
+
+.SUFFIXES: .c .o
+
+all: picol
+
+.c.o:
+	$(CC) $(CFLAGS) $(CCOPTS) -c $<
+
+picol:  $(OBJS) $(CRT0)
+	$(LINKER) -o $@ $(LINKER_OPT) $^
+
+clean:
+	rm -f $(OBJS) $(APPS) $(SRCS:.c=) core *~ *.sym *.map *.noi *.lk *.ihx *.tmp *.bin size.report *.o
+
+install:
+	$(UCP) $(FSIMG) < install.ucp
