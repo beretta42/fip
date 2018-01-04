@@ -1,0 +1,4 @@
+cd /usr/bin
+bget snazzy
+chmod 0755 snazzy
+quit
