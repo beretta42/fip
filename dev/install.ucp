@@ -1,0 +1,10 @@
+cd /dev
+mknod dw0 060666 2048
+mknod dw1 060666 2049
+mknod dw2 060666 2050
+mknod dw3 060666 2051
+mknod net 020666 1089
+mknod lpr 020666 768
+quit
+
+
