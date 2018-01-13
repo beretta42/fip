@@ -1,0 +1,5 @@
+cd /usr/bin
+bget bogomips
+chmod 0755 bogomips
+quit
+

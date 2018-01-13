@@ -5,6 +5,7 @@ all:
 	make -C bfc -f Makefile.6809 bfc install
 	make -C etc
 	make -C tcl -f Makefile.6809 picol install
+	make -C extra install
 
 clean:
 	make -C cbe -f Makefile.6809 clean
