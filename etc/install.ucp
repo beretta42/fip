@@ -5,8 +5,8 @@ bget inittab
 bget passwd
 bget rc
 chmod 0755 rc
-chmod 0755 rc.chk
 bget rc.chk
+chmod 0755 rc.chk
 mkdir skel
 cd skel
 bget skel/.profile
