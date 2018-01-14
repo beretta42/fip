@@ -1,0 +1,6 @@
+# stuff done on very first boot
+
+echo -n Building fortune database...
+cd /usr/share/fortunes
+fortune-gen < simple.fortunes > /usr/games/fortune.dat
+/etc/rc.chk $?

@@ -5,4 +5,15 @@ echo -n Setting /etc/mtab...
 prtroot > /etc/mtab
 /etc/rc.chk $?
 
+# On first boot
+if [ -e /etc/first ]; then
+   echo First Boot
+   /etc/rc.first
+   rm /etc/first
+fi
+
+echo -n Mounting fstab...
+mount -a
+/etc/rc.chk $?
+
 echo b4

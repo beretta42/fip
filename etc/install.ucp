@@ -3,10 +3,13 @@ bget group
 bget hostname
 bget inittab
 bget passwd
+bget first
 bget rc
 chmod 0755 rc
 bget rc.chk
 chmod 0755 rc.chk
+bget rc.first
+chmod 0755 rc.first
 mkdir skel
 cd skel
 bget skel/.profile

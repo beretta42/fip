@@ -1,0 +1,6 @@
+mkdir /usr/games
+cd /usr/share
+mkdir fortunes
+cd fortunes
+bget share/fortunes/simple.fortunes
+
