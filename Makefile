@@ -7,8 +7,10 @@ all:
 	cd $(FUZIX_DIR)/Standalone/filesystem-src; \
 	./build-filesystem -X fuzixfs.dsk 256 65535
 # Make different flavors of the kernel
+	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=emu kernel
 	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-emu.bin
+	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=real kernel
 	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-real.bin
 # Make and Install fip stuff
