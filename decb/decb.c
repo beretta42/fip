@@ -263,7 +263,7 @@ void openimg( char *name )
 void delchain( int first )
 {
     int next;
-    while (!(first & 0xc0)){
+    while ((first & 0xc0) != 0xc0){
 	next = fat[first];
 	fat[first] = 0xff;
 	first = next;
@@ -274,7 +274,7 @@ void delchain( int first )
 int countchain( int first )
 {
     int c = 0;
-    while (!(first & 0xc0)){
+    while ((first & 0xc0) != 0xc0 ){
 	first = fat[first];
 	c++;
     }
@@ -370,7 +370,8 @@ int list( int argc, char *argv[] )
 		printf("A");
 	    else
 		printf("B");
-	    printf(" %d\n", countchain(entry.first) );
+	    printf(" %2d", countchain(entry.first) );
+	    printf(" %x\n", entry.first );
 	    no++;
 	}
     }
@@ -397,12 +398,12 @@ int get( int argc, char *argv[] )
     gran = entry.first;
     size = GRANZ;
     while (size == GRANZ){
-	if (fat[gran] & 0xc0){
+	if ((fat[gran] & 0xc0) == 0xc0){
 	    size = (fat[gran] & ~0xc0) - 1;
 	    size *= SECZ;
 	    size += entry.remainder;
 	}
-	loadgran(gran & ~0xc0 );
+	loadgran(gran & ~0x80 );
 	if (trans) cr2nl();
 	ret = write( dst, buf, size );
 	if (ret != size){
@@ -508,7 +509,7 @@ int putb( int argc, char *argv[] )
 	if (entry.name[0] == 0xff) break;
 	if (entry.name[0] != 0){
 	    x = entry.first;
-	    while (!(x & 0xc0)){
+	    while ((x & 0xc0) != 0xc0){
 		if ((x == FATZ - 2) ||
 		    (x == FATZ - 1)){
 		    fprintf(stderr,"error: boot track already used");
@@ -570,6 +571,7 @@ int map( int argc, char *argv[] )
     uint8_t *p = fat;
     openimg(argv[0]);
     for (i = 0; i < (FATZ+7)/8; i++){
+	printf("%2x: ", i/2);
 	for(j = 0; j < 8 && p-fat < FATZ; j++){
 	    switch (*p){
 	    case 0xc0:
