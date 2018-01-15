@@ -1,5 +1,17 @@
+include config.mk
 
 all:
+# Make fuzix root filesystem
+	make -C $(FUZIX_DIR) TARGET=coco3 clean
+	make -C $(FUZIX_DIR) TARGET=coco3
+	cd $(FUZIX_DIR)/Standalone/filesystem-src; \
+	./build-filesystem -X fuzixfs.dsk 256 65535
+# Make different flavors of the kernel
+	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=emu kernel
+	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-emu.bin
+	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=real kernel
+	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-real.bin
+# Make and Install fip stuff
 	make -C cbe -f Makefile.6809 cbe install
 	make -C decb -f Makefile.6809 decb install
 	make -C bfc -f Makefile.6809 bfc install
@@ -8,6 +20,8 @@ all:
 	make -C extra install
 	make -C dev
 	make -C usr
+	make -C boot
+# Make smarter DECB boot disk
 
 clean:
 	make -C cbe -f Makefile.6809 clean

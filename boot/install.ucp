@@ -1,0 +1,6 @@
+mkdir /boot
+cd /boot
+bget fuzix-emu.bin
+bget fuzix-real.bin
+exit
+
