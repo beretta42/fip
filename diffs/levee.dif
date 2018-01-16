@@ -1,0 +1,13 @@
+diff --git a/Applications/levee/Makefile.6809 b/Applications/levee/Makefile.6809
+index 727c068..36ce581 100644
+--- a/Applications/levee/Makefile.6809
++++ b/Applications/levee/Makefile.6809
+@@ -3,7 +3,7 @@ CC = m6809-unknown-gcc
+ ASM = m6809-unknown-as
+ AR = m6809-unknown-ar
+ LINKER = m6809-unknown-ld
+-CFLAGS = -I../../Library/include -I../../Library/include/6809
++CFLAGS = -D SIZE=20480 -I../../Library/include -I../../Library/include/6809
+ COPT = -Os -fomit-frame-pointer
+ # Workaround for gcc6809 bug - register copy propagation issue
+ COPT += -fno-cprop-registers
