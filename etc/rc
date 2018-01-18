@@ -16,4 +16,8 @@ echo -n Mounting fstab...
 mount -a
 /etc/rc.chk $?
 
+echo -n Clearing utmp...
+> /var/run/utmp && chmod 0664 /var/run/utmp
+/etc/rc.chk $?
+
 echo b4
