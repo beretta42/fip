@@ -1,5 +1,11 @@
 killall 
 remount / ro
-echo Shutdown.
-halt
+if [ $1 = "-r" ]
+then
+   echo Reboot.
+   reboot
+else
+   echo Shutdown.
+   halt
+fi
 
