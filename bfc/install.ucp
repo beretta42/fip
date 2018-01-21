@@ -1,6 +1,9 @@
 cd /usr/bin
 bget bfc
 chmod 0755 bfc
+cd /usr/man/man1
+bget bfc.1
+chmod 0644 bfc.1
 cd /usr/src
 mkdir spiffy
 cd spiffy

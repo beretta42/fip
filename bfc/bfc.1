@@ -1,0 +1,85 @@
+.TH man 1 "Brett's Forth Compiler" "FUZIX" \" -*- nroff -*-
+.SH NAME
+bfc \- Brett's Forth Compiler 
+.SH SYNOPSIS
+.B bfc
+srcfile
+.SH DESCRIPTION
+.B bfc 
+compiles a forth-like/assembler source file to assembler source for later assembling to a working forth binary.  
+.B bfc 
+IS NOT FORTH: it is meant for bootstrapping a new forth easier, but its syntax is close to forth.  
+.B bfc
+will also build a run-time dictionary automatically.  Assembler source can be included directly in 
+.B bfc 
+source.  Its output file is fixed to be "f.out".
+.SH INTERNAL WORDS
+Most options are applied via the source file itself in the form of somewhat traditional forth words:
+.TP
+.I "p:" 
+Start a primitive definition. All lines proceeding will be inserted into the output file, and should consist of valid assembler lines. End this mode with ";p" on its own line.
+.TP
+.I "a:"
+Same as "p:" but does NOT create a dictionary header.
+.TP
+.I ":"
+Start a forth definition.  End this mode with ";".
+.TP
+.I "if" "then" "begin" "again" "until" "while" "repeat" "else" "for" "next" "]"
+These words have the same meaning as traditional forth.
+.TP
+.I "$"
+Compiles a literal string.  The delimiter is the first non-blank character following "$".  Use of this word requires "slit" to be defined.
+.TP
+.I "c$"
+Similar to "$" but produces run-time for a C style string (ended with 0)
+.TP
+.I "var"
+create word that causes its data address to be pushed onto stack.  Use of this word requires "dodoes" to be defined. The number atop the number stack will be compiled as the initial value.
+.TP
+.I "allot"
+compiles bytes to memory.  The size of the allotment it specified as the top of the number stack.
+.TP
+.I "imm"
+set the immediate bit on current definition.
+.TP
+.I "#"
+starts a line comment
+.SH PREREQUISITE WORDS
+Certain words must be defined to allow the compiler to compile its internal words.  These words will appear in the run-time dictionary, and generally have traditional forth meanings:
+.TP
+.I "lit"
+push a number onto the stack
+.TP
+.I "0bra"
+branch if top of stack is zero
+.TP
+.I "bra"
+branch
+.TP
+.I "slit"
+This word will have a length and string of characters placed after it in memory.  It is expected to push the address of the length + string onto the stack.  In memory: <slit> <len> <string.....>
+.TP
+.I "dodoes"
+This word will always have two cells appended by the compiler: an xt and a value.  At runtime, dodoes is expected to push the value onto the stack, execute the provided xt, and fix up the IP to the following word.  In memory:  <dodoes> <xt> <value>
+.TP
+.I "noop"
+Don't do anything - just return.
+.TP
+.I "dofor"
+Test the counter on top of the RETURN STACK for zero.  If zero then drop the counter, jump to the supplied immediate address.  If not zero then decrement the counter, and continue executing the code just past the address of the jump address.  In memory: <dofor> <jumpaddr> <loop code....> <bra> <done counting code....>
+.TP 
+.I "push"
+pull value off stack and push it onto the return stack.
+.SH EXIT STATUS
+.TP
+.B 0
+Completed successfully.
+.TP
+.B 1
+An error occurred.
+.SH BUGS
+Tons!
+.SH AUTHORS
+Brett M. Gordon
+

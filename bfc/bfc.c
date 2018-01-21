@@ -41,7 +41,7 @@ struct entry *dofor;     /* for doing for */
 struct entry *push;      /* for doing for */
 unsigned int cstack[16]; /* control stack depth: 16 */
 int cp=0;
-unsigned int nstack[16]; /* control stack depth: 16 */
+unsigned int nstack[16]; /* number stack depth: 16 */
 int np=0;
 state=0;
 
