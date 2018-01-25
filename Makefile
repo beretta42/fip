@@ -26,7 +26,7 @@ all:
 	make -C dev
 	make -C usr
 	make -C boot
-	make -C useradd install
+	make -C util -f Makefile.6809 useradd install
 # Make smarter DECB boot disk
 
 clean:
