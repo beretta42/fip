@@ -47,6 +47,7 @@
 //#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <dirent.h>
 //#include "chkname.h"
 //#include "defines.h"
 //#include "faillog.h"
@@ -56,9 +57,10 @@
 //#include "pwauth.h"
 //#include "pwio.h"
 
-/* 
+/*
     fixme:  This is stuff something else should be doing
 */
+void *alloca(size_t size);
 typedef uint8_t bool;
 #define false 0
 #define true -1
@@ -100,7 +102,7 @@ void *xmalloc(size_t size)
 #define gr_close() -1
 #define pw_close() -1
 
-#define HOMEPERM 0744
+#define HOMEPERM 0755
 
 struct group *xgetgrgid( gid_t gid )
 {
@@ -332,6 +334,67 @@ int find_new_gid(bool sys_group, gid_t *gid, gid_t *preferred_gid)
 	endgrent();
 	*gid = ++max;
 	return 0;
+}
+
+int copy_file( char *src, char *dst, uid_t uid, gid_t gid )
+{
+    int sfd;
+    int dfd;
+    int ret;
+    struct stat s;
+    static char buf[512];
+
+    sfd = open( src, O_RDONLY );
+    dfd = open( dst, O_WRONLY|O_CREAT, 0755 );
+    if (sfd < 0 || dfd < 0 ){
+	return -1;
+    }
+    do{
+	ret = read(sfd, buf, 512);
+	if (ret < 1) break;
+	ret = write(dfd, buf, ret);
+    } while (ret > 0);
+    close(sfd);
+    close(dfd);
+    chown(dst, uid, gid);
+    stat(src, &s);
+    chmod(dst, s.st_mode);
+    return 0;
+}
+
+void copy_tree( char *src, const char *dst, uid_t uid, gid_t gid )
+{
+    char sbuf[256];
+    char dbuf[256];
+    struct dirent *ent;
+    struct stat s;
+    DIR d;
+
+    DIR *srcdir = opendir_r(&d, src);
+    if (!srcdir) return;
+    while (ent = readdir(srcdir)) {
+	if (strcmp(".", ent->d_name) &&
+	    strcmp("..", ent->d_name)) {
+	    sbuf[0] = 0;
+	    dbuf[0] = 0;
+	    strcat(sbuf, src );
+	    strcat(sbuf, "/" );
+	    strcat(sbuf, ent->d_name);
+	    strcat(dbuf, dst );
+	    strcat(dbuf, "/" );
+	    strcat(dbuf, ent->d_name);
+	    stat( sbuf, &s);
+	    fprintf(stderr,"%s\n", dbuf);
+	    if (S_ISREG(s.st_mode) )
+		copy_file( sbuf, dbuf, uid, gid );
+	    if (S_ISDIR(s.st_mode) ){
+		mkdir(dbuf,s.st_mode);
+		chown(dbuf,uid,gid);
+		copy_tree( sbuf, dbuf, uid, gid );
+	    }
+	}
+    }
+    closedir_r(srcdir);
 }
 
 /* end of fixme */
@@ -1677,9 +1740,7 @@ int main (int argc, char **argv)
 	if (mflg) {
 		create_home ();
 		if (home_added) {
-//			copy_tree (def_template, user_home, false, false,
-//			           (uid_t)-1, user_id, (gid_t)-1, user_gid);
-			fprintf(stderr,"fixme: make copy_tree()!\n");
+		    copy_tree ((char *)def_template, user_home, user_id, user_gid);
 		} else {
 			fprintf (stderr,
 			         _("%s: warning: the home directory already exists.\n"
