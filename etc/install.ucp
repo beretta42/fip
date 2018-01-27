@@ -18,4 +18,5 @@ chmod 0755 .profile
 cd /bin
 bget shutdown
 chmod 0755 shutdown
+chmod 04755 /bin/passwd
 exit
