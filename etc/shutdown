@@ -1,6 +1,6 @@
-killall 
+killall
 remount / ro
-if [ $1 = "-r" ]
+if [ ! -z "$1" ] && [ $1 = "-r" ]
 then
    echo Reboot.
    reboot
