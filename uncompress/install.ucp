@@ -1,0 +1,7 @@
+cd /usr/bin
+bget uncompress
+chmod 0755 uncompress
+cd /
+bget data.txt.Z
+bget bfc.o.Z bfc.o.Z 
+quit
