@@ -1,10 +1,10 @@
 /*
   A LZW 'uncompress' for Fuzix
-  
-  set MAXBITS, BUFZ:
 
-  MAXBITS - how many bits per symbol.
+  set BUFZ,NAMZ:
+
   BUFZ    - I/O buffer size (make it multiple of disk sectors)
+  NAMZ    - max string size for pathnames
 
 */
 
@@ -14,10 +14,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#define MAXBITS 13
 #define CLEAR 256
-#define DICTZ (1<<MAXBITS)
-#define BUFZ  1024
+#define BUFZ  512
 #define NAMZ  256
 
 /* bits used for passing commandline options */
@@ -26,11 +24,12 @@ uint8_t fflg = 0;
 uint8_t vflg = 0;
 
 /* bits used for decompression algo */
-uint8_t app[DICTZ];
-uint16_t ref[DICTZ];
+uint8_t *app;
+uint16_t *ref;
 uint16_t nexti;
 uint8_t bits;
-uint16_t maxbits;
+uint8_t maxbits;
+uint8_t mymaxbits;
 
 /* bits used for in / out buffering */
 char infile[NAMZ];
@@ -149,15 +148,15 @@ void printsym( uint16_t sym )
 	outbyte(sym);
 	return;
     }
-    printsym(ref[sym]);
-    outbyte(app[sym]);
+    printsym( *(ref + sym));
+    outbyte( *(app + sym));
 }
 
 /* find first charactor in a symbol string */
 uint8_t first( uint16_t sym )
 {
     if (sym < 256 ) return sym;
-    return first(ref[sym]);
+    return first( *(ref + sym));
 }
 
 /* add next dictionary entry */
@@ -165,11 +164,11 @@ void adddict( uint16_t prefix, uint8_t suffix )
 {
     if (nexti == (1<<bits))
 	return;
-    ref[nexti] = prefix;
-    app[nexti] = suffix;
+    *(ref + nexti ) = prefix;
+    *(app + nexti ) = suffix;
     nexti++;
     if (nexti >= (1<<bits) &&
-	bits < maxbits ) {
+	bits < mymaxbits ) {
 	bits++;
     }
     return;
@@ -195,15 +194,16 @@ int decompress( void )
     ret = read(in, &header, 3);
     if (ret < 3 || header[0] != 0x1f || header[1] != 0x9d )
 	myabort("Bad id in header");
-    
+
     maxbits = header[2] & 0x1f;
-    
-    if (maxbits > MAXBITS){
+
+    if (maxbits > mymaxbits){
 	prints("Error: encoded in ");
 	printi(maxbits);
 	prints(" bits, but I can only do ");
-	printi(MAXBITS);
-	myabort(". ");
+	printi(mymaxbits);
+	prints(" bits\n");
+	myabort("Out of Memory");
     }
 
     cleardict();
@@ -241,6 +241,41 @@ void printusage( void )
     exit(1);
 }
 
+void myalloc( void )
+{
+    uint16_t *a;
+    uint16_t *b;
+    uint8_t *c;
+    intptr_t *st;
+    uint16_t size;
+
+    mymaxbits = sizeof(int) * 8 - 2;
+    size = 1<<mymaxbits;
+    st = sbrk(0);
+    for (; mymaxbits > 8; mymaxbits--, size>>=1){
+	brk(st);
+	a = sbrk( size );
+	if ( a == (void *)-1 ) 
+	    continue;
+	b = sbrk( size );
+	if ( b == (void *)-1 )
+	    continue;
+	c =  sbrk( size );
+	if ( c == (void *)-1 )
+	    continue;
+	if (vflg) {
+	    prints("Max encoded bits: ");
+	    printi(mymaxbits);
+	    prints("\n");
+	}
+	ref = a;
+	app = c;
+	return;
+    }
+    myabort("Out of memory");
+}
+
+
 void pipeit( void )
 {
     in = 0;
@@ -258,6 +293,7 @@ int main( int argc, char *argv[] )
     int ret;
     struct stat s;
 
+    myalloc();
     /* no args, just use stdin/stdout */
     if (argc == 1)
 	pipeit();
