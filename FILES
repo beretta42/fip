@@ -1,0 +1,19 @@
+bfc           Brett's Forth Compiler-Compiler
+boot          Kernels, BASIC boot script, etc...
+cbe           Color Basic Emulator for Fuzix
+config.mk     Master settings for building all
+decb          an RSDOS image manipulation program
+dev           scripts make distro's default devices
+diffs         *special* patches for Fuzix
+etc           files copied to distro's '/etc'
+extra         scripts to install extra stuff from fuzix itself
+fdisk         a fixed disk partitioning program
+LICENSE       who owns what
+Makefile      the grand makefile script
+README.md     please do
+snazzy        a widget system for fuzix
+tcl           work on picol, a TCL for fuzix
+TODO.md       Plenty
+uncompress    a 'uncompress' for fuzix
+usr           /usr/share for distro
+util          some sys admin utils ('useradd')
