@@ -16,7 +16,7 @@ CRT0 = $(FUZIX_DIR)/Library/libs/crt0_6809.o
 .SUFFIXES: .c .o
 
 
-SRCS  = uncompress.c
+SRCS  = uncompress.c compress.c
 
 OBJS = $(SRCS:.c=.o)
 
