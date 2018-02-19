@@ -22,6 +22,7 @@ A dialog type of thing
 
 
 struct widget *root = NULL;
+struct widget *inputwidget = NULL;
 
 /* for iterator functions */
 struct widget *obj = NULL;
@@ -171,27 +172,51 @@ void dirty_rect( struct widget *w )
     }
 }
 
+void input_text( char c )
+{
+    struct inputdata *i = inputwidget->data.input_data;
+    if (c == 0x1b || c == '\n'){
+	inputwidget->stat |= DIRTY;
+	inputwidget = NULL;
+	return;
+    }
+    if (c == '\b' && i->cur ){
+	i->buf[--i->cur] = 32;
+	inputwidget->stat |= DIRTY;
+	return;
+    }
+    if (c < 32)
+	return;
+    i->buf[i->cur++] = c;
+    inputwidget->stat |= DIRTY;
+}
 
 int input( void )
 {
     char c;
+    struct inputdata *i;
     while (1){
 	read(0,&c,1);
-	switch (c){
-	case 'j':
-	    select_next();
-	    break;
-	case 'k':
-	    select_prev();
-	    break;
-	case 'q':
-	    return -1;
-	case ' ':
-	case '\n':
-	    select_click();
-	    break;
-	case 0x1b:
-	    return -1;
+	if (inputwidget == NULL){
+	    switch (c){
+	    case 'j':
+		select_next();
+		break;
+	    case 'k':
+		select_prev();
+		break;
+	    case 'q':
+		return -1;
+	    case ' ':
+	    case '\n':
+		select_click();
+		break;
+	    case 0x1b:
+		return -1;
+	    }
+	}
+	else { /* keyboard going to certain widget */
+	    input_text(c);
 	}
 	display_widgets(root);
     }
@@ -282,6 +307,26 @@ struct widget *label(char *text)
 }
 
 
+void clicked_textinput( struct widget *w )
+{
+    struct inputdata *d = w->data.input_data;
+    inputwidget = w;
+}
+
+struct widget *textinput(char *text, struct inputdata *d)
+{
+    struct widget *w = new_widget();
+    if (w == NULL)
+	return NULL;
+    w->type = INPUT;
+    w->text = text;
+    w->draw = draw_input;
+    w->clicked = clicked_textinput;
+    hint_input( w );
+    w->stat |= DIRTY | FOCUSABLE;
+    w->data.input_data = d;
+    return w;
+}
 
 /* Needs factoring */
 void box_pack( struct widget *w, struct widget *c)
@@ -434,7 +479,17 @@ int main( int argc, char *argv[] )
     struct widget *mid;
     struct widget *bottom;
     struct widget *vbottom;
+    struct widget *vvbottom;
     struct radiodata rad;
+    struct inputdata in;
+
+    char test[50];
+    in.buf = test;
+    in.buf[49] = 0;
+    in.cur = 0;
+    in.size = 49;
+    memset(in.buf,' ',49);
+    
     cls();
     ll_init();
     /* setting root should be done via ll_init ? */
@@ -454,6 +509,10 @@ int main( int argc, char *argv[] )
     vbottom = box(HBOX);
     setgeom_widget(vbottom,0,0,80,1);
     pack_widget( root, vbottom);
+
+    vvbottom = box(HBOX);
+    setgeom_widget(vvbottom,0,0,80,1);
+    pack_widget( root, vvbottom);
 
     pack_widget( top, button("Menu", clicked_menu) );
     pack_widget( top, button("Ok", NULL) );
@@ -487,8 +546,10 @@ int main( int argc, char *argv[] )
     post_widget( menu );
     menu->stat |= HIDDEN;
 
+    pack_widget( vvbottom, textinput("some text", &in) );
+
     select_first(root);
-		 
+
     display_widgets(root);
     while ( input() >= 0 );
     ll_deinit();

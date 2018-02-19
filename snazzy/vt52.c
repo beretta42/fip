@@ -95,8 +95,14 @@ void draw_input( struct widget *w )
     printf("%s%s: %s",
 	   w->stat & FOCUSED ? "->" : "  ",
 	   w->text,
-	   w->text);
+	   w->data.input_data->buf);
     fflush(stdout);
+}
+
+void hint_input( struct widget *w )
+{
+    w->w = strlen(w->text) + w->data.input_data->size + 2;
+    w->h = 1;
 }
 
 void clear_area( struct widget *w )

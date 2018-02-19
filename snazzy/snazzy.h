@@ -44,7 +44,7 @@ struct widget {
     struct widget *sib;       /* next sibling */
     struct widget *child;     /* linked list of children */
     union {                   /* widget specific data */
-	struct inputdata input_data;
+	struct inputdata *input_data;
 	struct boxdata   box_data;
 	struct radiodata *radio_data;
     } data;
