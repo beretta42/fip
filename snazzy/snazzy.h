@@ -56,10 +56,3 @@ struct widget {
     void (*post)  (struct widget *); /* post packing */ 
 };
 
-
-extern int def_ypad;
-extern int def_xpad;
-
-void draw_button(struct widget *w);
-void draw_check(struct widget *w);
-void draw_label(struct widget *w);

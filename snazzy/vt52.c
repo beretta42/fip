@@ -9,10 +9,10 @@ A vt52 / Fuzix VT driver
 #include <string.h>
 #include <unistd.h>
 #include "snazzy.h"
+#include "ll.h"
 
-
-int def_ypad = 0;
-int def_xpad = 1;         
+const int def_ypad = 0;
+const int def_xpad = 1;         
 
 struct termios prev;
 struct termios new;
@@ -26,13 +26,13 @@ void cls( void )
 }
 
 /* set cursor coords */
-void sgoto( int x, int y)
+static void sgoto( int x, int y)
 {
     printf("\x1bY%c%c", ' '+y, ' '+x);
 }
 
 /* set color */
-void color( int fd, int bg )
+static void color( int fd, int bg )
 {
     printf("\x1b""b%c\x1b""c%c", '0'+fd, '0'+bg);
 }

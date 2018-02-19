@@ -8,6 +8,7 @@ A dialog type of thing
 #include <termios.h>
 #include <unistd.h>
 #include "snazzy.h"
+#include "ll.h"
 
 /* these defs don't go here */
 #define BLACK    0
