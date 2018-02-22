@@ -1,5 +1,7 @@
 cd /usr/bin
 bget bogomips
 chmod 0755 bogomips
+bget clear
+chmod 0755 clear
 quit
 
