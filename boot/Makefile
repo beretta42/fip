@@ -10,4 +10,5 @@ all:
 	boot.dsk,BOOT.BIN
 	decb copy -l -0 -a AUTOEXEC.BAS boot.dsk,AUTOEXEC.BAS
 
-
+clean:
+	rm -f boot.dsk fuzix.emu.bin fuzix-real.bin
