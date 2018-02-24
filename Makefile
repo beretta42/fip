@@ -1,5 +1,14 @@
 include config.mk
 
+kernel:
+	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
+	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=emu kernel
+	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-emu.bin
+	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
+	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=real kernel
+	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-real.bin
+	make -C boot all
+
 all:
 # apply special patches to Fuzix
 	cp diffs/* $(FUZIX_DIR)
