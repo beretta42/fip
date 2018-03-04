@@ -5,6 +5,8 @@ all:
 	cp diffs/* $(FUZIX_DIR)
 	- cd $(FUZIX_DIR); git apply levee.dif
 	- cd $(FUZIX_DIR); git apply dw.dif
+	- cd $(FUZIX_DIR); git apply sd.dif
+	- cd $(FUZIX_DIR); git apply nodouble.dif
 # Make fuzix root filesystem
 	make -C $(FUZIX_DIR) TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3
