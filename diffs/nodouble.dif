@@ -1,0 +1,37 @@
+diff --git a/Applications/games/Makefile.6809 b/Applications/games/Makefile.6809
+index 3e6de74..322fa23 100644
+--- a/Applications/games/Makefile.6809
++++ b/Applications/games/Makefile.6809
+@@ -6,7 +6,7 @@ LINKER = m6809-unknown-ld
+ CFLAGS = -I../../Library/include -I../../Library/include/6809
+ LINKER_OPT = --oformat=raw -L../../Library/libs -lc6809
+ LIBGCCDIR = $(dir $(shell $(CC) -print-libgcc-file-name))
+-LINKER_OPT += -L$(LIBGCCDIR) -lgcc
++LINKER_OPT += -L$(LIBGCCDIR) -lgcc -lm6809
+ LINKER_OPT += --script=../util/$(TARGET).link
+ ASM_OPT = -o
+ CRT0 = ../../Library/libs/crt0_6809.o
+diff --git a/Library/include/6809/stdint.h b/Library/include/6809/stdint.h
+index cd86d21..f7667e8 100644
+--- a/Library/include/6809/stdint.h
++++ b/Library/include/6809/stdint.h
+@@ -16,4 +16,6 @@ typedef uint16_t uintptr_t;
+ #define __SIZE_T_DEFINED
+ #define NO_64BIT
+ 
++#define double float
++
+ #endif
+diff --git a/Library/libs/Makefile.6809 b/Library/libs/Makefile.6809
+index 2129dcc..3c67e75 100644
+--- a/Library/libs/Makefile.6809
++++ b/Library/libs/Makefile.6809
+@@ -151,7 +151,7 @@ $(OBJ_CURS):%.o: %.c
+ 	$(CC) $(CC_OPT) $(@:.o=.c) -o $@
+ 
+ $(OBJ_LM):%.o: %.c
+-	$(CC) $(CC_OPT) -DBUILD_LIBM $(@:.o=.c) -o $@
++	$(CC) $(CC_OPT) $(@:.o=.c) -o $@
+ 
+ $(OBJ_HARD):%.o: %.c
+ 	$(CC) $(CC_NOOPT) $(@:.o=.c)
