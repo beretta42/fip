@@ -9,7 +9,7 @@ index 46cfcef..e72e140 100644
 -                    sd_spi_transmit_byte(0xFF); /* dummy CRC */
 -                    sd_spi_transmit_byte(0xFF);
 -                    success = ((sd_spi_wait(false) & 0x1F) == 0x05);
-+                    success = ((sd_spi_wait(false) & 0x1F) == 0x05) && 
++                    success = ((sd_spi_wait(false) & 0x1F) == 0x05) &&
 +			(sd_spi_wait(true) == 0xff);
                  }
              }
