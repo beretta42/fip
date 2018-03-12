@@ -7,6 +7,6 @@ si::sysinit:/bin/sh
 # Start up
 rc::bootwait:/etc/rc
 # Terminals
-01:13:respawn:getty /dev/tty1
-02:3:respawn:getty /dev/tty2
+01:13:respawn:getty /dev/tty1 115200 vt52 80 24
+02:3:respawn:getty /dev/tty2 115200 vt52 80 24
 03:3:off:getty /dev/tty3
