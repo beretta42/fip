@@ -1,6 +1,8 @@
 include config.mk
 
 all:
+# checkout known working kernel
+	cd $(FUZIX_DIR); git checkout 9f1e60c85bd2e51e236ddcdd40e6b0f2f9bd5a1b
 # apply special patches to Fuzix
 	cp diffs/* $(FUZIX_DIR)
 	- cd $(FUZIX_DIR); git apply levee.dif
