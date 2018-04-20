@@ -49,6 +49,10 @@ kernel:
 	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-fpga.bin
 	make -C boot all
 
+zip:
+	zip -j fuzix.zip \
+	boot/boot.dsk \
+	$(FUZIX_DIR)/Standalone/filesystem-src/fuzixfs.dsk
 
 
 clean:
@@ -56,7 +60,7 @@ clean:
 	make -C decb -f Makefile.6809 clean
 	make -C bfc -f Makefile.6809 clean
 	make -C tcl -f Makefile.6809 clean
-	rm -f *~
+	rm -f *~ fuzix.zip
 
 
 
