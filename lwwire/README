@@ -1,0 +1,12 @@
+notes:
+
+lwwire only talks to stdin/stdout.  This will have to change to some command
+line argument tty or something.  a shim like real lwwire is too costly, and
+we dont have select() to help us.  
+
+TODO:
+
+* attach to tty
+* figure out FUZIX timeouts
+* add extensions as static
+* actually test on something
