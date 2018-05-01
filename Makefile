@@ -23,6 +23,9 @@ all:
 	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=fpga kernel
 	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-fpga.bin
+	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
+	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=nano kernel
+	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-nano.bin
 # Make and Install fip stuff
 	make -C cbe -f Makefile.6809 cbe install
 	make -C decb -f Makefile.6809 decb install
@@ -47,6 +50,9 @@ kernel:
 	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=fpga kernel
 	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-fpga.bin
+	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
+	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=nano kernel
+	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-nano.bin
 	make -C boot all
 
 zip:
