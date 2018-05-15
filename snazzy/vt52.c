@@ -123,6 +123,7 @@ void ll_deinit( void )
 {
     /* reset tty to normal */
     tcsetattr(1, TCSANOW, &prev);
+    write(1,"\ee",2);
 }
 
 
@@ -143,6 +144,7 @@ int ll_init( void )
     /* fixme: fuzix doesn't really do this */
     sizes.ws_row = 25; sizes.ws_col = 80;
     /* fixme: make the root window here */
+    write(1,"\ef",2);
 }
 
 
