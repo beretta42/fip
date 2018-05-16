@@ -1,0 +1,176 @@
+Fip Fuzix
+
+This is a distro of Fuzix called Fip.  Its aim to make trying out
+Fuzix on your CoCo3 slightly easier.  Fip is near stock Fuzix, but
+with some added coco3 utilities (and hacks) sprinkled in for fun, and
+a marginal effort to shape up the default "/etc" directory to
+something more CoCo specific.
+
+Fip Addons:
+
+bfc - Brett's Forth Compiler
+spiffy - an example FORTH buildable with bfc
+cbe - Color Basic Emulator 
+decb - manipulate Disk Extended Color Basic disks/images from Fuzix
+uncompress - uncompress "Z files" from fuzix
+picol-fip - TCL w/ very basic input
+useradd - linux's 'useradd' ported to fuzix
+
+Requirements:
+
+* A CoCo3 with 512k or more of RAM.
+* Some sort of mass storage:
+     CoCoSDC
+     SuperIDE
+     Drivewire
+     Gary Becker's CoCo3FPGA SD card
+     Roger Taylor's Matchbox SD card
+* A working GIME chip
+
+
+HOW TO BOOT:
+
+Fip Fuzix is distributed via boot disks and a root disks Currently,
+there are two boot disks and one root disk.  The boot disks are normal
+DECB disks that contain a boot loader and a few different fuzix
+kernels.  "boot.dsk" is intended for real cocos and emulated cocos,
+and "boot2.dsk" is intended for the FPGA CoCos (CoCo3FPGA and the
+Matchbox).  The root disk, however, is a full 32 MB
+harddrive/partition image of the native Fuzix "root" filesystem,
+intended to be only accessed by Fuzix itself, and is mounted as root
+(aka "/") after boot.
+
+
+Via Drivewire:
+
+In the Drivewire Server, insert "boot,dsk" or "boot2.dsk" into an
+arbitrary drive.  Then insert "fuzix.dsk" as drive no. 1, and load the
+booter:
+
+LOAD"AUTOEXEC
+RUN
+
+
+Via CoCoSDC:
+
+Copy boot.dsk and fuzixfs.dsk onto your SD's FAT filesystem.
+
+DRIVE 0,"BOOT.DSK"
+DRIVE 1,"FUZIXFS.DSK"
+DRIVE 0
+LOAD"AUTOEXEC
+RUN
+
+
+If all goes well, you Fuzix will boot, splatter a bunch of unixy
+jargon to the screen, and put you at a "#" prompt.  This is a "root",
+or "super-user" shell, and you have full administration/god
+privileges at this prompt. HOWEVER, THIS SHELL IS NOT FOR GENERAL
+USE.  It is intended for system administration, and is an "holy cow"
+fail-safe.  At this time Fuzix IS NOT FULLY BOOTED.  To exit this
+bourne shell, and continue booting YOU WILL HAVE TO HIT CNTL-D at a
+fresh input line.
+
+If at boot, Fuzix repeatedly asks for a "bootdev", it means it tried
+to find a Fuzix filesystem (remember fuzixfs.dsk?) and failed.  This
+means your Fuzix disk image is really, really corrupt, you don't have
+the disk inserted, or it's inserted in the wrong place. This prompt
+allows you to specify where the kernel should look.
+
+Now wait a moment while Fuzix ('init' to be exact) loads and does some
+bookkeeping, and soon you will see a traditional unix login
+message. On a fresh Fuzix install, there is only one user account:
+"root".  Logging in as root give you full privileges.  The "root"
+account has no password set (yet).
+
+Once logged in as root, you may change your password from <nothing> to
+<something> via the 'passwd' utility.
+
+Your next step most probably should be adding a normal user account
+for you to play around.  LEAVE THE "root" ACCOUNT FOR DOING SYSTEM
+ADMINISTRATION THING - USE A NORMAL USER ACCOUNT FOR NORMAL USE!
+Interestingly, the utility used to add a user to the system is called
+'useradd'.  Use it like this:
+
+# useradd beretta
+
+A new user will be installed into the system, a home directory made,
+and some standard hidden settings and profile files will be copied to
+the new user directory.  Now you will be able to log in as "beretta"
+(or which ever handle/name/nick you choose).  Newly created accounts
+have a default password of simply <ENTER>.
+
+Now hit <CNTL-D> and logout of the root account and log in as
+yourself!  You may want to change your password (again via the
+'passwd' utility).
+
+WARNING: PROPER FUZIX SHUTDOWN
+
+Unix, and accordingly, Fuzix, needs to be shutdown properly in order
+for the system to tidy up the filesystem, and shutdown any processes.
+Don't just hit the reset button, or power.  This abrupt action will
+not mark the filesystem as "clean", and Fuzix will complain on next
+boot. (Linux users may be used to this).  To shutdown please use the
+'shutdown' command as root, and wait until fuzix tells you it's
+safe.  It will print "Shutdown." to let you know.  If you specify "-r"
+on 'shutdown' command line, then fuzix will also force a machine reset
+after safely unmounting it's disks.
+
+If you get many "read-only" errors on next boot, this means the
+filesystem wasn't unmounted properly.  And yes, this is really, really
+annoying, but its also the traditional unix way here's how to fix:
+remember the "holy cow" boot shell that pops up before the main bootup
+sequence?  Time to use it....
+
+This will ignore the problem:
+
+# remount /dev/hdb rw
+<more complaining>
+
+This will fix the problem:
+
+# fsck /dev/hdb
+
+fsck takes a LONG TIME. Sorry... welcome to what linux was like circa
+1994 :) 
+
+
+FURTHER HELP:
+
+Google: "linux man tar"
+Use Linux's Man Pages.  Most basic Unix utilities (and fuzix has many)
+are quite standard and have been around for a long while (~30 years?)
+and the basic commandline options are nearly the same across all unices.
+
+
+A note on the Color Computer Keyboard:
+
+'~' (tilde) is F1
+'|' (pipe) is <SHIFT>-F1
+'`' (backtick) is F2 and prints as an "up arrow".
+CNTL-1  will flip to virtual console number 1
+CNTL-2  will flip to virtual console number 2
+
+
+A note on Fip Fuzix's special devices:
+
+/dev/dw0   drivewire disks
+/dev/dw1
+/dev/dw2
+/dev/dw3
+
+/dev/hda   first logical harddrive
+/dev/hdb   second logical harddrive
+...
+
+/dev/tty1  console tty 1
+/dev/tty2  console tty 2
+
+/dev/tty3  drivewire virtual serial ports
+...
+/dev/tty6
+
+/dev/tty7  drivewire virtual window ports
+...
+/dev/tty9
+

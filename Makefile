@@ -61,6 +61,7 @@ pack:
 	cp boot/boot.dsk fuzix-0.1
 	cp boot/boot2.dsk fuzix-0.1
 	cp $(FUZIX_DIR)/Standalone/filesystem-src/fuzixfs.dsk fuzix-0.1
+	cp README.dist fuzix-0.1
 	# make a zip
 	zip -jr fuzix-0.1.zip fuzix-0.1
 	# make a tar
