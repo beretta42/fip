@@ -1,0 +1,11 @@
+Welcome to FUZIX
+
+This is the fip FUZIX distro.  A nearly stock 6809 FUZIX kernel
+coupled with a lightly modified filesystem tuned to a Radio Shack
+Color Computer 3 (CoCo3) environment.  To boot, there are some extra
+utilities available and a few bald-faced hacks.
+
+Have fun, and enjoy a true UNIX experience on your crappy 1980's home
+computer.
+
+Brett Gordon
