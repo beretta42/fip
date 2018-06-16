@@ -21,5 +21,6 @@ cd /bin
 bget shutdown
 chmod 0755 shutdown
 chmod 04755 /bin/passwd
+chmod 04755 /bin/su
 mkdir /home
 exit
