@@ -1,4 +1,5 @@
 cd /etc
+rm fstab
 mkdir default
 bget group
 bget hostname
