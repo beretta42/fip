@@ -2,5 +2,5 @@
 
 echo -n Building fortune database...
 cd /usr/share/fortunes
-fortune-gen < simple.fortunes > /usr/games/fortune.dat
+/usr/games/fortune-gen < simple.fortunes > /usr/games/fortune.dat
 /etc/rc.chk $?
