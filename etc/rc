@@ -1,8 +1,11 @@
 echo -n b1
 echo /etc/rc:
 
+umask 022
+remount / rw
+
 echo -n Setting /etc/mtab...
-prtroot > /etc/mtab
+prtroot -i
 /etc/rc.chk $?
 
 # On first boot
