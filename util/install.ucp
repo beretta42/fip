@@ -1,7 +1,9 @@
 cd /usr/bin
 bget useradd
+bget xxd
 chmod 0755 useradd
-# cd /usr/man/man1
-# bget decb.1
-# chmod 0644 decb.1
+chmod 0755 xxd
+cd /usr/man/man1
+bget xxd.1
+chmod 0644 xxd.1
 quit

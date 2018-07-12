@@ -15,7 +15,7 @@ CRT0 = $(FUZIX_DIR)/Library/libs/crt0_6809.o
 .SUFFIXES: .c .o
 
 
-SRCS  = useradd.c
+SRCS  = useradd.c xxd.c
 
 OBJS = $(SRCS:.c=.o)
 
