@@ -626,12 +626,16 @@ int main( int argc, char *argv[] )
 	    break;
 	case 'b':
 	    defaflag = 0x00;
+	    break;
 	case '0':
 	    deftype = 0x0;
+	    break;
 	case '1':
 	    deftype = 0x1;
+	    break;
 	case '2':
 	    deftype = 0x2;
+	    break;
 	case '3':
 	    deftype = 0x3;
 	    break;
