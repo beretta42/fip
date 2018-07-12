@@ -7,10 +7,8 @@ then
 fi 
 if [ ! -z "$1" ] && [ $1 = "-r" ]
 then
-   echo Reboot.
    reboot
 else
-   echo Shutdown.
    halt
 fi
 
