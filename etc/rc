@@ -2,7 +2,8 @@ echo -n b1
 echo /etc/rc:
 
 umask 022
-remount / rw
+substroot fsck -a %
+substroot remount % rw
 
 echo -n Setting /etc/mtab...
 prtroot -i
