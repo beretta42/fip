@@ -1,0 +1,4 @@
+cd /usr/bin
+bget slz 
+chmod 0755 slz 
+quit
