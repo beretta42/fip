@@ -1,0 +1,4 @@
+cd /usr/bin
+bget firc 
+chmod 0755 firc 
+quit

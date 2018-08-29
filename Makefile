@@ -40,6 +40,8 @@ all:
 	make -C util -f Makefile.6809 install
 	make -C slz -f Makefile.6809
 	make -C slz -f Makefile.6809 install
+	make -C firc -f Makefile.6809 
+	make -C firc -f Makefile.6809 install
 # Make smarter DECB boot disk
 
 
