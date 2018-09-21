@@ -7,17 +7,19 @@ index f9ef80dc..ac73945d 100644
  APPS = util cmd sh games cave cpm v7games games cursesgames \
 -       as09 ld09 netd SmallC MWC asz80 flashrom ue cpmfs plato
 +       as09 ld09 netd SmallC MWC asz80 flashrom ue cpmfs plato \
-+       dw
++       dw fview
  
  .PHONY: $(APPS)
  
-@@ -63,6 +64,9 @@ cpmfs:
+@@ -63,6 +64,11 @@ cpmfs:
  plato:
  	+(cd plato; $(MAKE) -f Makefile.$(USERCPU))
  
 +dw:
 +	+(cd dw; $(MAKE) -f Makefile.$(USERCPU))
 +
++fview:
++	+(cd fview; $(MAKE) -f Makefile.$(USERCPU))
  clean:
  	(cd util; $(MAKE) -f Makefile.$(USERCPU) clean)
  	(cd V7/cmd; $(MAKE) -f Makefile.$(USERCPU) clean)
