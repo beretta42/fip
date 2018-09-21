@@ -19,8 +19,6 @@ chmod 0755 .profile
 bget skel/welcome.txt
 chmod 0555 welcome.txt
 cd /bin
-bget shutdown
-chmod 0755 shutdown
 chmod 04755 /bin/passwd
 chmod 04755 /bin/su
 mkdir /home
