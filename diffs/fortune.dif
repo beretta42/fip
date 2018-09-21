@@ -1,5 +1,5 @@
 diff --git a/Applications/games/fuzix-games.pkg b/Applications/games/fuzix-games.pkg
-index 7caf3616..690e48df 100644
+index 7caf3616..11a16fad 100644
 --- a/Applications/games/fuzix-games.pkg
 +++ b/Applications/games/fuzix-games.pkg
 @@ -20,7 +20,6 @@ f 0755 /usr/games/advint        advint
@@ -10,3 +10,12 @@ index 7caf3616..690e48df 100644
  f 0755 /usr/games/myst01        myst01
  f 0755 /usr/games/myst02        myst02
  f 0755 /usr/games/myst03        myst03
+@@ -34,3 +33,7 @@ f 0755 /usr/games/myst10        myst10
+ f 0755 /usr/games/myst11        myst11
+ f 0755 /usr/games/qrun          qrun
+ f 0755 /usr/games/hamurabi      hamurabi
++f 0755 /usr/games/startrek      startrek
++f 0664 /usr/games/startrek.doc  startrek.doc
++f 0664 /usr/games/startrek.intro startrek.intro
++f 0664 /usr/games/startrek.logo startrek.logo
+\ No newline at end of file
