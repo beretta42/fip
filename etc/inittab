@@ -10,3 +10,6 @@ rc::bootwait:/etc/rc
 01:13:respawn:getty /dev/tty1 115200 vt52 80 24
 02:3:respawn:getty /dev/tty2 115200 vt52 80 24
 03:3:off:getty /dev/tty3
+# Halt the system
+ht:6:wait:/etc/rc.halt
+
