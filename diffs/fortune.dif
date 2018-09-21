@@ -14,8 +14,9 @@ index 7caf3616..11a16fad 100644
  f 0755 /usr/games/myst11        myst11
  f 0755 /usr/games/qrun          qrun
  f 0755 /usr/games/hamurabi      hamurabi
++d 0755 /usr/lib/trek
 +f 0755 /usr/games/startrek      startrek
-+f 0664 /usr/games/startrek.doc  startrek.doc
-+f 0664 /usr/games/startrek.intro startrek.intro
-+f 0664 /usr/games/startrek.logo startrek.logo
++f 0664 /usr/lib/trek/startrek.doc  startrek.doc
++f 0664 /usr/lib/trek/startrek.intro startrek.intro
++f 0664 /usr/lib/trek/startrek.logo startrek.logo
 \ No newline at end of file
