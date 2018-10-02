@@ -7,7 +7,7 @@ index f9ef80dc..ac73945d 100644
  APPS = util cmd sh games cave cpm v7games games cursesgames \
 -       as09 ld09 netd SmallC MWC asz80 flashrom ue cpmfs plato
 +       as09 ld09 netd SmallC MWC asz80 flashrom ue cpmfs plato \
-+       dw fview
++       dw fview levee
  
  .PHONY: $(APPS)
  
