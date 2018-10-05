@@ -61,17 +61,19 @@ kernel:
 	cp $(FUZIX_DIR)/Kernel/fuzix.bin boot/fuzix-nano.bin
 	make -C boot all
 
+REL = 0.3pre1
+
 pack:
 	# make dist directory
-	mkdir -p fuzix-0.1
-	cp boot/boot.dsk fuzix-0.1
-	cp boot/boot2.dsk fuzix-0.1
-	cp $(FUZIX_DIR)/Standalone/filesystem-src/fuzixfs.dsk fuzix-0.1
-	cp README.dist fuzix-0.1
+	mkdir -p fuzix-$(REL)
+	cp boot/boot.dsk fuzix-$(REL)
+	cp boot/boot2.dsk fuzix-$(REL)
+	cp $(FUZIX_DIR)/Standalone/filesystem-src/fuzixfs.dsk fuzix-$(REL)
+	cp README.dist fuzix-$(REL)
 	# make a zip
-	zip -jr fuzix-0.1.zip fuzix-0.1
+	zip -jr fuzix-$(REL).zip fuzix-$(REL)
 	# make a tar
-	tar -czf fuzix-0.1.tar.gz fuzix-0.1
+	tar -czf fuzix-$(REL).tar.gz fuzix-$(REL)
 
 clean:
 	make -C cbe -f Makefile.6809 clean
