@@ -12,6 +12,8 @@ bget rc.chk
 chmod 0755 rc.chk
 bget rc.first
 chmod 0755 rc.first
+bget rc.halt
+chmod 0755 rc.halt
 mkdir skel
 cd skel
 bget skel/.profile
