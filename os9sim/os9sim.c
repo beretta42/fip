@@ -33,7 +33,7 @@ struct regs_t {
     uint16_t pc;
 };
 
-extern struct regs_t reg;
+extern struct regs_t *reg;
 
 /* os9 module header struct (executable modules) 
    fixme: struct field packing may be incorrect!
@@ -53,70 +53,70 @@ struct header_s {
 void os9open(void) {
     int ret;
 #ifdef DEBUG
-    fprintf(stderr,"I$Open: \"%s\"\n", (char *)reg.x);
+    fprintf(stderr,"I$Open: \"%s\"\n", (char *)reg->x);
 #endif
-    ret = open((char *)reg.x, O_RDWR);
+    ret = open((char *)reg->x, O_RDWR);
     if (ret < 0) {
-	reg.cc |= 1;
-	reg.b = -1;
+	reg->cc |= 1;
+	reg->b = -1;
     }
     else
-	reg.a = ret;
+	reg->a = ret;
 }
 
 void os9read(void) {
     int ret;
 #ifdef DEBUG  
-    fprintf(stderr, "I$Read: %x %x %x\n", reg.a, reg.x, reg.y);
+    fprintf(stderr, "I$Read: %x %x %x\n", reg->a, reg->x, reg->y);
 #endif
-    ret = read(reg.a, (char *)reg.x, reg.y);
+    ret = read(reg->a, (char *)reg->x, reg->y);
     if (ret < 0) {
-	reg.cc |= 1;
-	reg.b = -1;
+	reg->cc |= 1;
+	reg->b = -1;
 	return;
     }
-    reg.y = ret;
+    reg->y = ret;
 }
 
 void os9write(void) {
     int ret;
 #ifdef DEBUG
-    fprintf(stderr, "I$Write: %x %x %x\n", reg.a, reg.x, reg.y);
+    fprintf(stderr, "I$Write: %x %x %x\n", reg->a, reg->x, reg->y);
 #endif
-    ret = write(reg.a, (char *)reg.x, reg.y);
+    ret = write(reg->a, (char *)reg->x, reg->y);
     if (ret < 0) {
-	reg.cc |= 1;
-	reg.b = -1;
+	reg->cc |= 1;
+	reg->b = -1;
 	return;
     }
-    reg.y = ret;
+    reg->y = ret;
 }
 
 void os9close(void) {
     int ret;
 #ifdef DEBUG   
-    fprintf(stderr, "I$Close: %x\n", reg.a);
+    fprintf(stderr, "I$Close: %x\n", reg->a);
 #endif    
-    ret = close(reg.a);
+    ret = close(reg->a);
     if (ret < 0) {
-	reg.cc |= 1;
-	reg.b = errno;
+	reg->cc |= 1;
+	reg->b = errno;
     }
-    reg.b = ret;
+    reg->b = ret;
 }
 
 void os9exit(void) {
 #ifdef DEBUG    
-    fprintf(stderr, "F$Exit: %x\n", reg.b);
+    fprintf(stderr, "F$Exit: %x\n", reg->b);
 #endif    
-    exit(reg.b);
+    exit(reg->b);
 }
 
     
 void os9call(void) {
-    uint8_t op = *(uint8_t *)reg.pc;
-    reg.pc += 1;
-    reg.cc &= ~0x1;
+    uint8_t op = *(uint8_t *)reg->pc;
+    reg->pc += 1;
+    reg->cc &= ~0x1;
     switch(op) {
     case 0x84:
 	os9open();
