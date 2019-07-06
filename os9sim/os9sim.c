@@ -155,8 +155,17 @@ void main(int argc, char **argv) {
     uint16_t size;    /* total size of I + D */
     
     /* install swi2 vector */
-    *((uint8_t *)0xfef1) = 0x7e;
-    *((uint16_t *)0xfef2) = (uint16_t)swi2_handler;
+    fd = open("/dev/sys",O_RDONLY);
+    if (fd < 0) {
+	perror("/dev/sys");
+	exit(1);
+    }
+    ret = ioctl(fd, 0710, swi2_handler);
+    if (ret < 0) {
+	perror("setting swi2");
+	exit(1);
+    }
+    close(fd);
     
     if (argc < 2) {
 	fprintf(stderr,"os9sim module [params]...\n");
