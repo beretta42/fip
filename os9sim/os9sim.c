@@ -13,6 +13,7 @@ TODO:
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <6809/sys.h>
 
 void swi2_handler(void);
 uint8_t swi2(uint8_t func);
@@ -143,6 +144,7 @@ void main(int argc, char **argv) {
     int ret;
     uint16_t todo;
     uint8_t *b;
+    struct regs_t *s;
     
     /* all the pointers os9 needs */
     uint8_t *ibot;    /* bottom of code area */
@@ -153,14 +155,28 @@ void main(int argc, char **argv) {
     uint8_t *ipc;     /* initial PC of program */
     uint16_t psize;   /* size of parameter area */
     uint16_t size;    /* total size of I + D */
-    
+
+    static struct _uzisysinfoblk i;
+
+    /* verify we're on a 6809 */
+    ret = _uname(&i, sizeof(i));
+    if (ret < 0) {
+	perror("uname");
+	exit(1);
+    }
+
+    if (i.cputype != 1) {
+	fprintf(stderr,"incorect cpu, need 6809\n");
+	exit(1);
+    }
+
     /* install swi2 vector */
     fd = open("/dev/sys",O_RDONLY);
     if (fd < 0) {
 	perror("/dev/sys");
 	exit(1);
     }
-    ret = ioctl(fd, 0710, swi2_handler);
+    ret = ioctl(fd, IOC_SET_SWI2, swi2_handler);
     if (ret < 0) {
 	perror("setting swi2");
 	exit(1);
@@ -244,18 +260,13 @@ void main(int argc, char **argv) {
     strcpy(pbot, argv[2]);
 
     /* make the initial interrupt stack */
-    b = sbot;
-    *b++ = 0x80;   /* set entire flag so RTI will pull all regs */
-    *b++ = (uint16_t) psize >> 8;
-    *b++ = (uint16_t) psize & 0xff;
-    *b++ = (uint16_t) itop >> 8;
-    *b++ = (uint16_t) pbot >> 8;
-    *b++ = (uint16_t) pbot & 0xff;
-    *b++ = (uint16_t) dtop >> 8;
-    *b++ = (uint16_t) dtop & 0xff;
-    *b++ = (uint16_t) itop >> 8;
-    *b++ = (uint16_t) itop & 0xff;
-    *b++ = (uint16_t) ipc >> 8;
-    *b++ = (uint16_t) ipc & 0xff;
+    s = (struct regs_t *)sbot;
+    s->cc = 0x80;
+    *(uint16_t *)&s->a = (uint16_t) psize;
+    s->dp = (uint16_t) itop >> 8;
+    s->x = (uint16_t) pbot;
+    s->y = (uint16_t) dtop;
+    s->u = (uint16_t) itop;
+    s->pc = (uint16_t) ipc;
     os9go(sbot);
 }
