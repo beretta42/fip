@@ -5,7 +5,8 @@ TODO:
    separate C and os9 stack
    work on blasting away discardable code
    translate fuzix error returns to os9 error codes
-
+   reuse f$chain stuff for init ?
+   cat and pass all C args to os9
 */
 
 
@@ -16,7 +17,7 @@ TODO:
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
-#include <6809/sys.h>
+#include <cpu_ioctl.h>
 
 #define DEBUG
 
@@ -432,7 +433,7 @@ void main(int argc, char **argv) {
        our SP around
      */
     mybrk = (uint16_t) sbrk(0);
-    ret = brk(&s - 256);
+    ret = brk(&s - 512);
     if (ret < 0) {
 	perror("brk");
 	exit(1);
@@ -459,7 +460,7 @@ void main(int argc, char **argv) {
 	perror("/dev/sys");
 	exit(1);
     }
-    ret = ioctl(fd, IOC_SET_SWI2, swi2_handler);
+    ret = ioctl(fd, CPUIOC_6809SWI2, swi2_handler);
     if (ret < 0) {
 	perror("setting swi2");
 	exit(1);

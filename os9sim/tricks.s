@@ -1,4 +1,3 @@
-	export _swi2
 	export _swi2_handler
 	export _os9go
 	export _reg
@@ -7,23 +6,16 @@
 
 	.area .bss
 _reg    rmb 2
-	rmb 256			; system/C stack
-sstack
+sstack  rmb 2
 	.area .text
 
-_swi2:
-	stb p@
-	swi2
-p@:	.db 0
-	rts
-
-_os9go:
+_os9go: sts sstack
 	tfr x,s
 	rti
 
 _swi2_handler:
 	sts _reg
-	lds #sstack		; kick off C with a fresh system stack
+	lds sstack		; load up saved C/system stack
 	jsr _os9call		; go do c: void os9call(void *sp)
 	lds _reg
 	rti
