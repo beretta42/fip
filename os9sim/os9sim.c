@@ -22,7 +22,6 @@ TODO:
 #define DEBUG
 
 void swi2_handler(void);
-uint8_t swi2(uint8_t func);
 void os9go(uint16_t stackptr);
 uint16_t mybrk;
 uint16_t mytop;
@@ -88,6 +87,10 @@ struct pathoptions_s {
     uint8_t  xofchar;
     uint8_t  szx;
     uint8_t  szy;
+    uint8_t  wno;
+    uint8_t  val;
+    uint8_t  cpx;
+    uint8_t  cpy;
 } po;
 
 
@@ -183,7 +186,15 @@ void os9getstat(void) {
     fprintf(stderr, "I$GetStt: %x %x\n", reg->a, reg->b);
 #endif
     if (reg->b == 0) {
-	memcpy((char *)reg->x, &po, 32);
+	//memcpy((char *)reg->x, &po, sizeof(po));
+	reg->b = 0;
+	return;
+    }
+    if (reg->b == 0x12) {
+	reg->a = 0;
+	reg->x = 0xa000;
+	reg->y = 0x0000;
+	reg->b = 0;
 	return;
     }
     reg->cc |= 1;
@@ -196,6 +207,8 @@ void os9setstat(void) {
 #endif
     if (reg->b == 0) {
 	dump((char *)reg->x, 32);
+	reg->b = 0;
+	return;
     }
     reg->cc |= 1;
     reg->b = -1;
@@ -231,6 +244,14 @@ void os9write(void) {
 	return;
     }
     reg->y = ret;
+}
+
+void os9unlink(void) {
+    int ret;
+#ifdef DEBUG
+    fprintf(stderr, "F$Unlink: %x\n", reg->u);
+    dump((char *)reg->u, 32);
+#endif
 }
 
 void os9close(void) {
@@ -351,6 +372,9 @@ void os9call(void) {
     reg->cc &= ~0x1;
     /* fixme: prob need a table or something */
     switch(op) {
+    case 0x02:
+	os9unlink();
+	break;
     case 0x09:
 	os9icpt();
 	break;
@@ -433,7 +457,7 @@ void main(int argc, char **argv) {
        our SP around
      */
     mybrk = (uint16_t) sbrk(0);
-    ret = brk(&s - 512);
+    ret = brk(&s - 1500);
     if (ret < 0) {
 	perror("brk");
 	exit(1);
