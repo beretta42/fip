@@ -1,0 +1,5 @@
+cd /boot
+bget AUTOEXEC.BAS
+bget boot.bin
+quit
+

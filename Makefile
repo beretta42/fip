@@ -43,7 +43,7 @@ all:
 	make -C slz -f Makefile.6809 install
 	make -C firc -f Makefile.6809 
 	make -C firc -f Makefile.6809 install
-	make -C booter
+	make -C booter all install
 	make -C os9sim all install
 # Make smarter DECB boot disk
 
