@@ -1,0 +1,5 @@
+This is a(nother) booter for FUZIX coco3 kernel.  It is a standard
+DECB application that will grok the FUZIX filesystem and load a kernel
+directly therefrom.  The Kernel must be in the standard DECB format,
+but will exist on a FUZIX filesystem. This may be incorporated
+directly into the FUZIX source at a later date.
