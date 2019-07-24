@@ -14,7 +14,8 @@ booter:
 	decb copy -b -2 boot.bin boot.dsk,BOOT.BIN
 	decb copy -a -0 -l AUTOEXEC.BAS boot.dsk,AUTOEXEC.BAS
 
-instal: $(UCP) $(FSIMG) < install.ucp
+install:
+	$(UCP) $(FSIMG) < install.ucp
 
 clean:
 	rm -f *~ *.o *.dsk boot.map *.bin
