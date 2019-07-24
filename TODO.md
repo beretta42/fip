@@ -20,4 +20,4 @@
 - [x] increase 'vi' buffer to max, and recompile/install :(
 - [x] install some sort of first-time-boot "etc" files.
 - [ ] make custom decb boot disk.
-
+- [ ] set time at boot

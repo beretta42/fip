@@ -1,0 +1,10 @@
+cd /usr/bin
+bget os9sim
+chmod 0755 os9sim
+cd /root
+bget helloworld.bf
+bget bf
+bget rogue
+bget cavewalk
+quit
+
