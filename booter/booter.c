@@ -1,4 +1,4 @@
-/* 
+/*
    Grok a Fuzix 16 bit filesystem, finds a kernel in in /boot, and
    loads it up into the usual kernel location in memory.
 
@@ -7,8 +7,8 @@
    In BASIC, set BT$ to the name of the kernel to load. Also, FX$ will
    be passed to the kernel as it's commandline.
 
-   TODO: 
-   partitioning support
+   TODO:
+   extended MBR partitioning support
    double indirect support (we're limited to reading ~140k files until done)
    figure out exactly how many temporary buffer madness
 */
@@ -57,7 +57,7 @@ typedef struct super_s {
 #define FMOD_GO_CLEAN   0       /* Write a clean to the disk (internal) */
 #define FMOD_DIRTY      1       /* Mounted or uncleanly unmounted from r/w */
 #define FMOD_CLEAN      2       /* Clean. Used internally to mean don't
-                                   update the super block */
+				   update the super block */
     uint8_t       s_timeh;      /* bits 32-40: FIXME - wire up */
     uint32_t      s_time;
     blkno_t       s_tfree;
@@ -69,7 +69,7 @@ typedef struct inode {
     uint16_t i_mode;
 #define F_REG   0100000
 #define F_DIR   040000
-    uint16_t i_nlink;           /* Note we have 64K inodes so we never overflow 
+    uint16_t i_nlink;           /* Note we have 64K inodes so we never overflow
 */
     uint16_t i_uid;
     uint16_t i_gid;
@@ -84,6 +84,34 @@ typedef struct dirent {
     uint16_t inode;
     char name[30];
 } dirent_t;
+
+#define MBR_PART_OFF 446        /* offset into MBR block of partition entrys */
+typedef struct {
+    int8_t status;
+    uint8_t chs_start[3];
+    uint8_t type;
+    uint8_t chs_last[3];
+    uint8_t lba_first[4];
+    uint8_t lba_last[4];
+} mbr_part_t;
+
+
+uint32_t swizzle32(uint8_t *b) {
+    uint8_t s0, s1;
+    s0 = b[0];
+    s1 = b[1];
+    b[0] = b[3];
+    b[1] = b[2];
+    b[2] = s1;
+    b[3] = s0;
+    return *(uint32_t *)b;
+}
+
+uint8_t mbr_magic(uint8_t *b) {
+    if (b[510] != 0x55 || b[511] != 0xaa)
+	return 1;
+    return 0;
+}
 
 
 /* output routines / debugging stuff */
@@ -120,15 +148,16 @@ void dump(void *addr, int size) {
 
 
 
-/* 
+/*
    Program variables - mostly for keeping state of the memory file and
    exactly one disk file
 */
-   
+
 char cmd_line[256];
 char boot_file[256];
 uint8_t drive_no;
-uint8_t driver_no;
+uint8_t part_no;
+uint32_t part_offset;
 uint16_t tick_div;
 uint8_t buf[512];        // temporary buffer
 uint8_t tmp[512];
@@ -148,7 +177,7 @@ char *maddr;
 char *paddr;
 
 int (*dev_init)(uint8_t drive_no) = dw_init;
-int (*dev_read)(void *b, uint32_t blk) = dw_read;
+int (*_dev_read)(void *b, uint32_t blk) = dw_read;
 
 
 /* coco 3 BASIC/Hardware stuff */
@@ -157,12 +186,12 @@ int (*dev_read)(void *b, uint32_t blk) = dw_read;
 #define casflg (*(volatile uint8_t *)0x11a)  // upper/lower case toggle
 #define timer  (*(volatile uint16_t *)0x112) // BASIC's ticker
 #define keyrol ((uint8_t *)0x0152)  // BASIC's keyroll over
-#define piacol (*(volatile uint8_t *)0xff00) // keyboard columns (read this)  
+#define piacol (*(volatile uint8_t *)0xff00) // keyboard columns (read this)
 #define piarow (*(volatile uint8_t *)0xff02) // keyboard rows (write this)
 
-/* 
+/*
    this struct defines BASIC's idea a a name variable
-   these structures exist in in an array 
+   these structures exist in in an array
 */
 typedef struct basvar {
     uint16_t name;
@@ -176,7 +205,7 @@ typedef struct basvar {
 struct binhdr_s {
     uint8_t flag;
 #define PRE  0x00
-#define POST  0xff      
+#define POST  0xff
     uint16_t len;
     char *addr;
 } h;
@@ -198,6 +227,11 @@ uint16_t strlen(char *s) {
 
 static strcpy( char *d, char *s) {
     memcpy(d,s,strlen(s)+1);
+}
+
+
+static dev_read(void *b, uint32_t blk) {
+    return _dev_read(b, blk + part_offset);
 }
 
 /* copies string variable from BASIC to dst */
@@ -295,7 +329,7 @@ static int16_t lookup(uint16_t ino, char *name) {
     return -1;
 }
 
-/* break path apart and lookup each inode 
+/* break path apart and lookup each inode
  returns an inode no to ID the inode, or -1 on error */
 static uint16_t dopath(char *s) {
     static char c[31];
@@ -365,14 +399,29 @@ static void cat(char *p) {
 }
 
 /* try to mount a filesystem */
-static int8_t mount(uint16_t minor) {
+static int8_t mount(uint16_t minor, uint8_t part) {
     super_t *s = (super_t *)buf;
-    cd = ROOT;
+    mbr_part_t *p = (mbr_part_t *)(buf + MBR_PART_OFF);
+    uint8_t *c;
     if (dev_init(minor)) goto bad;
+    /* load up first and check for sector for MBR */
+    if (dev_read(buf, 0)) goto bad;
+    if (mbr_magic(buf) == 0) {
+	if (part) {
+	    c = (uint8_t *)&p[minor-1].lba_first;
+	    part_offset = swizzle32(c);
+	}
+    }
+    else {
+	puts("MBR NOT FOUND\r");
+	part_offset = 0L;
+	if (part > 0) goto bad;
+    }
     if (dev_read(s, 1)) goto bad;
     /* fixme: should check fmod too? */
     if (s->s_mounted != MAGIC) goto bad;
     mountf = 1;
+    cd = ROOT;
     return 0;
  bad:
     mountf = 0;
@@ -408,10 +457,11 @@ void mwrite(void *buf, int no) {
 }
 
 /* set driver to use */
+// fixme: add dw_bit, sd
 int8_t set_driver(char *b) {
     if (!strcmp(b,"dw")) {
 	dev_init = dw_init;
-	dev_read = dw_read;
+	_dev_read = dw_read;
 	return 0;
     }
     //if (!strcmp(b, "sdc")) {
@@ -503,6 +553,7 @@ uint8_t boot(char *name, char *cmd) {
 	}
     }
     ticker(tick_div);
+    /* copy bonce routine down to phys 0 */
     mseek(0);
     mwrite(&bounce, BOUNCE_LEN);
     mwrite(&h.addr,2);
@@ -520,7 +571,7 @@ uint8_t boot(char *name, char *cmd) {
 }
 
 /*
-  functions for interactive command-line mode 
+  functions for interactive command-line mode
 */
 
 
@@ -596,21 +647,57 @@ void docd(void) {
 
 /* attempt a FUZIX filesystem mount */
 void domount(void) {
+    uint8_t drive = 0;
+    uint8_t part = 0;
     char *t = strtok(NULL);
     if (t == NULL) goto bad;
     set_driver(t);
-    t = strtok(NULL);
-    if (t == NULL) goto bad;
-    if (mount(*t - 0x30)) goto bad;
+    if (t) {
+	t = strtok(NULL);
+	if (t) drive = *t - 0x30;
+    }
+    if (t) {
+	t = strtok(NULL);
+	if (t) part = *t - 0x30;
+    }
+    if (drive > 9 || part > 4) {
+	puts("BAD DRIVE NO OR PART\r");
+	goto bad;
+    }
+    if (mount(drive, part)) goto bad;
     return;
  bad:
     puts("CANNOT MOUNT\r");
     return;
 }
 
+
+void dopart(void) {
+    int x;
+    mbr_part_t *p = (mbr_part_t *)(buf + MBR_PART_OFF);
+    if (_dev_read(buf,0)) {
+	puts("CANNOT READ DEVICE\r");
+	return;
+    }
+    if (mbr_magic(buf)) {
+	puts("MBR MAGIC NOT FOUND\r");
+	return;
+    }
+    puts("STAT TYPE START    END\r");
+    for (x = 0; x < 4; x++) {
+	putb(p->status); puts("   ");
+	putb(p->type); puts("   ");
+	putl(swizzle32(p->lba_first)); putc(' ');
+	putl(swizzle32(p->lba_last));
+	NL;
+	p++;
+    }
+}
+
 /* yup. */
 void dohelp(void) {
     puts("mount driver no\r");
+    puts("part\r");
     puts("cd dir\r");
     puts("ls\r");
     puts("cat\r");
@@ -637,12 +724,13 @@ void docmd(void) {
     puts("DROPPING TO COMMAND LINE\r");
     while(1) {
 	getcmdline(tmp, ">");
-	t = strtok(tmp);	
+	t = strtok(tmp);
 	if (t == NULL) continue;
 	if (!strcmp(t,"ls")) { dir(cd); continue; }
 	if (!strcmp(t,"cd")) { docd(); continue; }
 	if (!strcmp(t,"cat")) { cat(strtok(NULL)); continue; }
 	if (!strcmp(t,"mount")) { domount(); continue; }
+	if (!strcmp(t,"part")) { dopart(); continue; }
 	if (!strcmp(t,"exit")) _exit();
 	if (!strcmp(t,"quit")) _exit();
 	if (!strcmp(t,"help")) { dohelp(); continue; }
@@ -666,8 +754,8 @@ void main(void) {
 	puts("BT$ NOT SET\r");
 	docmd();
     }
-    else {	
-	// wait a while for user to hit override	
+    else {
+	// wait a while for user to hit override
 	puts("HIT CNTL FOR MANUAL BOOTING\r");
 	puts("BOOT IN "); putb(togo);
 	while(togo--) {
@@ -689,7 +777,7 @@ void main(void) {
     puts("BT: "); puts(boot_file); NL;
     puts("FX: "); puts(cmd_line); NL;
     /* parse boot params */
-    t = strtok(boot_file); // first time parses off kernel filename 
+    t = strtok(boot_file); // first time parses off kernel filename
     t = strtok(NULL); // second pares off drive no
     if (t) {
 	if (set_driver(t)) {
@@ -705,8 +793,16 @@ void main(void) {
 	    puts("BAD DRIVE NO\r");
 	}
     }
+    if (t) {
+	t = strtok(NULL);
+	if (t) part_no = *t - 0x30;
+	if (part_no > 4) {
+	    puts("BAD PARTITION NO\r");
+	    part_no = 0;
+	}
+    }
     /* try to mount */
-    while (mount(drive_no)) {
+    while (mount(drive_no, part_no)) {
 	puts("CANNOT MOUNT FILESYSTEM\r");
 	docmd();
 	goto again;
