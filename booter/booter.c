@@ -487,6 +487,10 @@ uint8_t iscntldown() {
     return ~piacol & 0x40;
 }
 
+uint8_t isspcdown() {
+    piarow = (uint8_t)~0x80;
+    return ~piacol & 0x08;
+}
 
 /* attempt to boot - takes .bin name and a kernel command line */
 uint8_t boot(char *name, char *cmd) {
@@ -757,6 +761,7 @@ void main(void) {
     else {
 	// wait a while for user to hit override
 	puts("HIT CNTL FOR MANUAL BOOTING\r");
+	puts("HIT SPACE TO BOOT\r");
 	puts("BOOT IN "); putb(togo);
 	while(togo--) {
 	    time = timer + 60;
@@ -764,6 +769,10 @@ void main(void) {
 		if (iscntldown()) {
 		    NL;
 		    docmd();
+		    goto again;
+		}
+		if (isspcdown()) {
+		    NL;
 		    goto again;
 		}
 	    }
