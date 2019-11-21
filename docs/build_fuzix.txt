@@ -1,0 +1,69 @@
+# Build Fuzix from Scratch
+
+# get FUZIX
+git clone https://github.com/EtchedPixels/FUZIX FUZIX
+
+# get lwtools
+hg clone http://lwtools.projects.l-w.ca/hg/ lwtools
+
+# get gcc
+wget https://ftp.gnu.org/gnu/gcc/gcc-4.6.4/gcc-4.6.4.tar.bz2
+tar -xjf gcc-4.6.4.tar.bz2
+
+# patch gcc with lwtools patch
+cd gcc-4.6.4
+patch -p1 <../lwtools/extra/gcc6809lw-4.6.4-7.patch
+cd ..
+
+# make and install lwtools
+cd lwtools
+make
+sudo make install
+cd ..
+
+# copy fuzix's version of gcc wrappers to path
+sudo cp FUZIX/Build/tools/* /usr/local/bin
+# ln ranlib to ar
+sudo ln -s /bin/true /usr/local/bin/m6809-unknown-ranlib
+sudo ln -s /bin/true /usr/local/bin/m6809-unknown-nm
+sudo ln -s /bin/true /usr/local/bin/m6809-unknown-objump
+
+# setup gcc build directory
+mkdir gcc-4.6.4-build
+cd gcc-4.6.4-build
+
+# run gcc's configure (based of Tormod's ppa config)
+../gcc-4.6.4/configure --enable-languages=c --target=m6809-unknown --disable-libada --program-prefix=m6809-unknown- --enable-obsolete --disable-threads --disable-nls --disable-libssp --prefix=/usr/local --with-as=/usr/local/bin/m6809-unknown-as --with-ld=/usr/local/bin/m6809-unknown-ld --with-ar=/usr/local/bin/m6809-unknown-ar
+
+# make gcc
+make all-gcc
+sudo make install-gcc
+
+# make libgcc (compiler support library)
+make all-target-libgcc
+sudo make install-target-libgcc
+cd ..
+
+hg clone http://hg.code.sf.net/p/toolshed/code toolshed-code
+cd toolshed-code
+make -C toolshed-code/build/unix
+sudo make -C toolshed-code/build/unix install
+
+# build FUZIX
+export PATH=$PATH:$(pwd)/FUZIX/tools
+cd FUZIX/Kernel/platform-coco3
+./build
+cd ../../..
+
+sudo apt-get install -y byacc
+sudo update-alternatives --set yacc /usr/bin/byacc
+
+git clone https://github.com/beretta42/fip
+mkdir fip/cbe/roms
+cp ../*.rom fip/cbe/roms
+cd fip
+make
+
+hg clone http://lwwire.projects.l-w.ca/hg/ lwwire
+make -C lwwire/src
+
