@@ -1,0 +1,35 @@
+.TH man 1 "Tandy Color Computer Utilities" "FUZIX" \" -*- nroff -*-
+.SH NAME
+detoken \- Detokenize a Color Computer BASIC file
+.SH SYNOPSIS
+.B detoken
+[\-l] [\-h] [\-o outfile] infile.bas ...
+.SH DESCRIPTION
+.B detoken
+detokenizes and concats Tandy Color Computer BASIC files to regular ASCII
+.SH OPTIONS
+.TP
+.I "-h"
+print usage
+.TP
+.I "-o outfile"
+set file output file
+.TP
+.I "-l"
+translate line ending
+.SH EXAMPLES
+.TP
+$ detoken -lo out.bas file1.bas file2.bas file3.bas
+.IP
+.SH EXIT STATUS
+.TP
+.B 0
+Completed successfully.
+.TP
+.B not 0
+An error occured.
+.SH BUGS
+Tons!
+.SH AUTHORS
+Brett M. Gordon
+

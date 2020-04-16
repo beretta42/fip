@@ -15,7 +15,7 @@ CRT0 = $(FUZIX_DIR)/Library/libs/crt0_6809.o
 .SUFFIXES: .c .o
 
 
-SRCS  = decb.c
+SRCS  = decb.c detoken.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -36,6 +36,10 @@ clean:
 
 rmbak:
 	rm -f *~ core
+
+linux:
+	gcc detoken.c -o detoken
+	gcc decb.c -o decb
 
 install:
 	$(UCP) $(FSIMG) < install.ucp

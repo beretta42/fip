@@ -1,7 +1,11 @@
 cd /usr/bin
 bget decb
 chmod 0755 decb
+bget detoken
+chmod 07ff detoken
 cd /usr/man/man1
 bget decb.1
 chmod 0644 decb.1
+bget detoken.1
+chmod 0644 detoken.1
 quit
