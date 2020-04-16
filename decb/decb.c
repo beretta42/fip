@@ -32,7 +32,7 @@ struct dirent {
     uint8_t type;
     uint8_t aflag;
     uint8_t first;
-    uint16_t remainder;
+    uint8_t remainder[2];
     uint8_t unused[16];
 };
 
@@ -107,7 +107,7 @@ void saveentry( void ){
 int getentry( void ){
     off_t off;
     int ret;
-    static count;
+    static int count;
     switch( estate ){
     case 0:
 	off = lseek(fd, DIRST+offset, SEEK_SET);
@@ -403,7 +403,7 @@ int get( int argc, char *argv[] )
 	if ((fat[gran] & 0xc0) == 0xc0){
 	    size = (fat[gran] & ~0xc0) - 1;
 	    size *= SECZ;
-	    size += entry.remainder;
+	    size += (entry.remainder[0]<<8) + entry.remainder[1];
 	}
 	loadgran(gran & ~0x80 );
 	if (trans) cr2nl();
@@ -471,7 +471,8 @@ int put( int argc, char *argv[] )
 	    exit(1);
 	}
     }
-    entry.remainder = size % SECZ;
+    entry.remainder[0] = (size % SECZ) >> 8;
+    entry.remainder[1] = (size % SECZ) & 0xff;
     fat[x] = 0xc0 | ((size + SECZ-1) / SECZ);
     stringconv(argv[2]);
     memcpy(&entry, buf, 11);
