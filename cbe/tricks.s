@@ -78,6 +78,7 @@ fail@	ldb	#1
 	stb	$f0		; set error (which one?)
 	puls	d,x,pc
 
+
 	;; console out replacement code
 	;;  takes A: char to put
 	;;  returns: nothing
@@ -85,13 +86,14 @@ conout
 	tst	$6f		; test dev num
 	bne	dsk@		; is not screen? 0 ?
 	pshs	d,x		; save regs
+	clr	<$89
 	cmpa	#13
 	bne	a@
-	clr	$6c		; set DEVPOS
 	lda	#10
 	sta	,s
 	bra	b@
-a@	inc	$6c
+a@
+	inc	<$89
 b@	ldd	#1		; push length
 	pshs	d
 	leax	2,s		; point to char in stack
@@ -248,9 +250,6 @@ a@	ldd	,u++
 	;; defang Break key checking FIXME: :)
 	lda	#$39	        ; RTS op
 	sta	$adeb		;
-	;; always print CR
-	lda	#$20		; BRA op
-	sta	$b963		;
 	;; patch CLS
 	ldx	#$a928
 	lda	#$7e
@@ -273,5 +272,3 @@ _setStack
 	puls	x		; return address
 	lds	#$8000
 	jmp	,x		; return to basic
-	
-	
