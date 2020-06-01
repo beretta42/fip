@@ -663,6 +663,7 @@ int main( int argc, char *argv[] )
     }
     pargc = argc - optind - 1;
     pargv = &argv[optind+1];
+    if (pargv[-1] == NULL) printusage();
     if ( ! strcmp(pargv[-1],"mkfs") ) exit(mkfs(pargc, pargv));
     if ( ! strcmp(pargv[-1],"ls") ) exit(list(pargc, pargv));
     if ( ! strcmp(pargv[-1],"get") ) exit(get(pargc, pargv));
