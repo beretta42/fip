@@ -159,6 +159,8 @@ A note on Fip Fuzix's special devices:
 /dev/dw2
 /dev/dw3
 
+/dev/lpr   driverwire printer
+
 /dev/hda   first logical harddrive
 /dev/hdb   second logical harddrive
 ...
