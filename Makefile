@@ -70,6 +70,7 @@ pack:
 	cp boot/boot.dsk fuzix-$(REL)
 	cp boot/boot2.dsk fuzix-$(REL)
 	cp $(FUZIX_DIR)/Standalone/filesystem-src/fuzixfs.dsk fuzix-$(REL)
+	cat boot/idehdr.img $(FUZIX_DIR)/Standalone/filesystem-src/fuzixfs.dsk > fuzix-$(REL)/fuzixfs_ide.img
 	cp README.dist fuzix-$(REL)
 	# make a zip
 	zip -jr fuzix-$(REL).zip fuzix-$(REL)
