@@ -10,7 +10,7 @@ COPT = -Os
 LINKER_OPT = --format=raw -L$(FUZIX_DIR)/Library/libs -lc6809
 LIBGCCDIR = $(dir $(shell $(CC) -print-libgcc-file-name))
 LINKER_OPT += -L$(LIBGCCDIR) -lgcc
-LINKER_OPT += --script=$(FUZIX_DIR)/Applications/util/$(TARGET).link
+LINKER_OPT += --script=$(FUZIX_DIR)/Library/link/$(TARGET).link
 ASM_OPT = -o
 CRT0 = $(FUZIX_DIR)/Library/libs/crt0_6809.o
 
