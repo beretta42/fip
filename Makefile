@@ -12,7 +12,7 @@ all:
 	make -C $(FUZIX_DIR) TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3
 	cd $(FUZIX_DIR)/Standalone/filesystem-src; \
-	./build-filesystem-ng -X -y -f fuzixfs.dsk -g 256 65535
+	./build-filesystem -X fuzixfs.dsk 256 65535
 # Make different flavors of the kernel
 	make -C $(FUZIX_DIR)/Kernel TARGET=coco3 clean
 	make -C $(FUZIX_DIR) TARGET=coco3 SUBTARGET=emu kernel
